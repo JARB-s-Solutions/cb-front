@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function LoginForm() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -28,15 +30,13 @@ export default function LoginForm() {
         throw new Error(data.error || "Error al iniciar sesión");
       }
 
-      // Guardar token JWT
       localStorage.setItem('token', data.token);
       setSuccessMessage(data.message);
       
       console.log("Usuario logueado:", data.user);
       
-      // Redirección
       setTimeout(() => {
-        // window.location.href = '/dashboard'; 
+        // navigate('/dashboard'); 
       }, 1000);
 
     } catch (err) {
@@ -57,26 +57,24 @@ export default function LoginForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          googleToken: credentialResponse.credential // El string 'eyJ...'
+          googleToken: credentialResponse.credential 
         })
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Error al conectar con Google");
+        throw new Error(data.error || data.detalle || "Error al conectar con Google");
       }
 
-      // Validar la estructura de respuesta de tu googleLogin
       if (data.status === "success") {
         localStorage.setItem('token', data.token);
         setSuccessMessage("¡Bienvenido con Google!");
         
         console.log("Usuario de Google logueado:", data.data.barber);
         
-        // Redirección
         setTimeout(() => {
-          // window.location.href = '/dashboard';
+          // navigate('/dashboard');
         }, 1000);
       } else {
         throw new Error("Respuesta inesperada del servidor");
@@ -141,7 +139,7 @@ export default function LoginForm() {
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <label className="text-sm font-semibold text-on-surface-variant block" htmlFor="password">Contraseña</label>
-              <a href="#" className="text-sm font-semibold text-primary hover:text-primary-fixed transition-colors">¿Olvidaste tu contraseña?</a>
+              <Link to="/forgot-password" className="text-sm font-semibold text-primary hover:text-primary-fixed transition-colors">¿Olvidaste tu contraseña?</Link>
             </div>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline">
@@ -191,11 +189,19 @@ export default function LoginForm() {
             onSuccess={handleGoogleSuccess}
             onError={() => setError("La conexión con Google falló.")}
             useOneTap={false}
-            theme="filled_black" // Opciones: 'outline', 'filled_blue', 'filled_black'
+            theme="filled_black" 
             shape="rectangular"
             text="continue_with"
             width="360"
           />
+        </div>
+
+        {/* NUEVO: Enlace para ir al Registro */}
+        <div className="text-center mt-6 pt-4 border-t border-outline-variant/30">
+          <span className="text-on-surface-variant opacity-80 text-sm">¿No tienes una cuenta? </span>
+          <Link to="/register" className="text-sm font-semibold text-primary hover:text-primary-fixed transition-colors underline-offset-4 hover:underline">
+            Crear cuenta
+          </Link>
         </div>
 
       </div>
