@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { Link, useNavigate } from 'react-router-dom';
+import { api } from '../../config/axios'; 
+import { useAuth } from '../../context/AuthContext'; 
 
 export default function RegisterForm() {
   const navigate = useNavigate();
+  const { checkAuth } = useAuth(); // Función para actualizar la sesión global
+  
   const [formData, setFormData] = useState({
     fullName: '',
     username: '',
@@ -30,30 +34,24 @@ export default function RegisterForm() {
     setSuccessMessage(null);
 
     try {
-      const response = await fetch("https://controlbarber-backend.vercel.app/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
+      // Axios envía la petición a la URL base configurada
+      await api.post('/auth/register', formData);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (data.details && data.details.length > 0) {
-          throw new Error(data.details[0].message);
-        }
-        throw new Error(data.error || "Error al registrar usuario");
-      }
-
-      setSuccessMessage("Usuario registrado exitosamente. Redirigiendo...");
+      setSuccessMessage("Usuario registrado exitosamente. Redirigiendo al login...");
       setFormData({ fullName: '', username: '', email: '', phone: '', password: '' });
 
+      // Tras registrarse normalmente, lo mandamos al login para que inicie sesión
       setTimeout(() => {
         navigate('/');
       }, 2000);
 
     } catch (err) {
-      setError(err.message);
+      // Axios guarda los errores del backend en err.response.data
+      if (err.response?.data?.details?.length > 0) {
+        setError(err.response.data.details[0].message); // Error de validación (Zod)
+      } else {
+        setError(err.response?.data?.error || "Error al registrar usuario");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -66,33 +64,22 @@ export default function RegisterForm() {
     setSuccessMessage(null);
 
     try {
-      const response = await fetch("https://controlbarber-backend.vercel.app/api/auth/google", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          googleToken: credentialResponse.credential
-        })
+      const response = await api.post('/auth/google', {
+        googleToken: credentialResponse.credential
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || data.detalle || "Error al conectar con Google");
-      }
-
-      if (data.status === "success") {
-        localStorage.setItem('token', data.token);
+      if (response.data.status === "success") {
         setSuccessMessage("¡Cuenta vinculada exitosamente!");
         
+        await checkAuth(); // Le decimos a React que revise la cookie e inicie sesión
+        
         setTimeout(() => {
-          // navigate('/dashboard');
+          navigate('/dashboard'); // Y lo mandamos adentro de la app
         }, 1000);
-      } else {
-        throw new Error("Respuesta inesperada del servidor");
       }
 
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.error || err.response?.data?.detalle || "Error al conectar con Google");
     } finally {
       setIsLoading(false);
     }
@@ -134,9 +121,8 @@ export default function RegisterForm() {
           </div>
         )}
 
-        {/* Registration Form */}
+        {/* Formulario */}
         <form onSubmit={handleRegister} className="flex flex-col gap-3.5">
-          
           <div className="flex flex-col gap-1.5">
             <label className="text-[13px] font-semibold text-on-surface-variant px-1" htmlFor="fullName">Nombre Completo</label>
             <div className="relative group">
@@ -220,14 +206,14 @@ export default function RegisterForm() {
           </button>
         </form>
 
-        {/* OR Separator */}
+        {/* Separador */}
         <div className="flex items-center gap-4 w-full my-1">
           <div className="h-px bg-outline-variant flex-1 opacity-50"></div>
           <span className="text-[11px] text-on-surface-variant font-semibold tracking-wider">O</span>
           <div className="h-px bg-outline-variant flex-1 opacity-50"></div>
         </div>
 
-        {/* Botón Oficial de Google */}
+        {/* Botón de Google */}
         <div className="flex justify-center w-full">
           <GoogleLogin 
             onSuccess={handleGoogleSuccess}
@@ -240,7 +226,7 @@ export default function RegisterForm() {
           />
         </div>
 
-        {/* Login Link */}
+        {/* Footer Link */}
         <div className="text-center mt-1">
           <span className="text-on-surface-variant opacity-80 text-[13px]">¿Ya tienes una cuenta? </span>
           <Link to="/" className="font-semibold text-[13px] text-primary hover:text-primary-fixed transition-colors underline-offset-4 hover:underline">
