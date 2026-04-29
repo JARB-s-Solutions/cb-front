@@ -17,7 +17,7 @@ function App() {
         {/* Ruta de recuperar contraseña */}
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-        { {/* Ruat de restablecimiento */}}
+        {/* Ruta de restablecimiento */}
         <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
         
         {/* Si escriben una URL que no existe, los mandamos al login */}
