@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { api } from '../../config/axios'; 
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState('');
@@ -14,24 +15,12 @@ export default function ForgotPasswordForm() {
     setSuccessMessage(null);
 
     try {
-      const response = await fetch("https://controlbarber-backend.vercel.app/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Error al solicitar la recuperación");
-      }
-
-      // El backend devuelve: { message: "Si el correo existe, recibirás un enlace..." }
-      setSuccessMessage(data.message || "Se ha enviado un enlace de recuperación a tu correo.");
-      setEmail(''); // Limpiar el input
+      const response = await api.post('/auth/forgot-password', { email });
+      setSuccessMessage(response.data.message || "Se ha enviado un enlace de recuperación a tu correo.");
+      setEmail('');
 
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.error || "Error al solicitar la recuperación");
     } finally {
       setIsLoading(false);
     }
@@ -39,33 +28,28 @@ export default function ForgotPasswordForm() {
 
   return (
     <div className="relative w-full max-w-[440px]">
-      {/* Resplandor ambiental de fondo */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none flex justify-center items-center opacity-30">
         <div className="w-[400px] h-[400px] bg-primary rounded-full blur-[100px] opacity-20 mix-blend-screen"></div>
       </div>
 
-      {/* Contenedor Principal */}
       <div className="relative z-10 w-full bg-surface-container-low border border-outline-variant/50 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] pt-10 pb-10 px-8 sm:px-10 flex flex-col gap-6 overflow-hidden">
         
-        {/* Barra de progreso superior (Visible solo al cargar) */}
         {isLoading && (
           <div className="absolute top-0 left-0 w-full h-[2px] bg-surface-variant overflow-hidden">
             <div className="h-full w-1/4 bg-primary rounded-r-full animate-[shimmer_1.5s_infinite]"></div>
           </div>
         )}
 
-        {/* Header Section */}
         <div className="flex flex-col items-center text-center gap-3">
           <div className="w-12 h-12 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center mb-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
             <span className="material-symbols-outlined text-primary text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>lock_reset</span>
           </div>
-          <h1 className="text-2xl font-bold text-on-surface tracking-tight">Recuperar Contraseña</h1>
+          <h1 className="text-2xl font-bold text-on-surface tracking-tight">Recuperar Acceso</h1>
           <p className="text-sm text-on-surface-variant leading-relaxed">
             Ingresa tu correo electrónico asociado a la cuenta. Si existe, recibirás un enlace de recuperación.
           </p>
         </div>
 
-        {/* Alertas */}
         {error && (
           <div className="p-3 rounded-lg bg-error-container/20 border-l-4 border-error text-on-error-container flex items-start gap-2">
             <span className="material-symbols-outlined text-error text-[20px] mt-0.5">error</span>
@@ -80,10 +64,7 @@ export default function ForgotPasswordForm() {
           </div>
         )}
 
-        {/* Recovery Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
-          
-          {/* Email Input Group */}
           <div className="flex flex-col gap-1.5 group">
             <label className="text-[13px] font-semibold text-on-surface-variant ml-1 transition-colors group-focus-within:text-primary" htmlFor="email">
               Correo Electrónico
@@ -101,7 +82,6 @@ export default function ForgotPasswordForm() {
             </div>
           </div>
 
-          {/* Action Button */}
           <button 
             type="submit" 
             disabled={isLoading}
@@ -116,7 +96,6 @@ export default function ForgotPasswordForm() {
           </button>
         </form>
 
-        {/* Back to Login Link */}
         <div className="flex justify-center mt-2">
           <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-medium text-on-surface-variant hover:text-primary transition-colors duration-200">
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>

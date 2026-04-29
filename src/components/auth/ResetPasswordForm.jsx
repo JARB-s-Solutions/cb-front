@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { api } from '../../config/axios';
 
 export default function ResetPasswordForm() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  
-  // Extraemos el token de la URL (ej: ?token=069eea2c...)
   const token = searchParams.get('token');
 
   const [password, setPassword] = useState('');
@@ -19,7 +18,6 @@ export default function ResetPasswordForm() {
     setError(null);
     setSuccessMessage(null);
 
-    // Validaciones locales
     if (!token) {
       setError("No se encontró un token válido en la URL.");
       return;
@@ -36,29 +34,18 @@ export default function ResetPasswordForm() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`https://controlbarber-backend.vercel.app/api/auth/reset-password/${token}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Error al actualizar la contraseña");
-      }
+      await api.post(`/auth/reset-password/${token}`, { password });
 
       setSuccessMessage("¡Contraseña actualizada! Redirigiendo al inicio de sesión...");
       setPassword('');
       setConfirmPassword('');
 
-      // Redirigir al login después de 2.5 segundos
       setTimeout(() => {
         navigate('/');
       }, 2500);
 
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.error || "Error al actualizar la contraseña");
     } finally {
       setIsLoading(false);
     }
@@ -67,14 +54,12 @@ export default function ResetPasswordForm() {
   return (
     <div className="w-full max-w-[440px] bg-surface-container rounded-xl border border-outline-variant shadow-[0_10px_30px_rgba(0,0,0,0.5)] py-10 px-8 relative overflow-hidden flex flex-col gap-6">
       
-      {/* Loading Indicator (Top Edge) */}
       {isLoading && (
         <div className="absolute top-0 left-0 w-full h-[2px] bg-surface-container-highest">
           <div className="h-full bg-primary w-1/3 animate-[shimmer_1s_infinite]"></div>
         </div>
       )}
 
-      {/* Header / Branding */}
       <header className="flex flex-col items-center text-center mb-2">
         <div className="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center mb-4 border border-outline-variant shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
           <span className="material-symbols-outlined text-primary text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>key</span>
@@ -85,7 +70,6 @@ export default function ResetPasswordForm() {
         </p>
       </header>
 
-      {/* Alertas */}
       {error && (
         <div className="p-3 rounded-lg bg-error-container/20 border-l-4 border-error text-on-error-container flex items-start gap-2">
           <span className="material-symbols-outlined text-error text-[20px] mt-0.5">error</span>
@@ -100,10 +84,7 @@ export default function ResetPasswordForm() {
         </div>
       )}
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        
-        {/* Nueva Contraseña */}
         <div className="flex flex-col gap-1.5">
           <label className="text-[11px] font-semibold text-on-surface uppercase tracking-widest pl-1" htmlFor="new_password">
             Nueva Contraseña
@@ -119,7 +100,6 @@ export default function ResetPasswordForm() {
           </div>
         </div>
 
-        {/* Confirmar Contraseña */}
         <div className="flex flex-col gap-1.5">
           <label className="text-[11px] font-semibold text-on-surface uppercase tracking-widest pl-1" htmlFor="confirm_password">
             Confirmar Contraseña
@@ -135,7 +115,6 @@ export default function ResetPasswordForm() {
           </div>
         </div>
 
-        {/* Validation Hint */}
         <div className="flex items-start gap-1.5 text-outline px-1">
           <span className="material-symbols-outlined text-[16px] mt-[2px]">info</span>
           <p className="text-[12px] leading-tight pt-0.5">
@@ -143,7 +122,6 @@ export default function ResetPasswordForm() {
           </p>
         </div>
 
-        {/* Actions */}
         <div className="mt-2 flex flex-col gap-3">
           <button 
             type="submit" 
