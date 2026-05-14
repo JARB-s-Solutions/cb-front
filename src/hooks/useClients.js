@@ -6,60 +6,62 @@ export const useClients = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Obtener todos los clientes
   const fetchClients = useCallback(async () => {
     setIsLoading(true);
-    setError(null);
     try {
       const response = await api.get('/clients');
-      setClients(response.data.data || response.data);
+      setClients(response.data.data || response.data || []);
     } catch (err) {
-      console.error('Error fetching clients:', err);
+      console.error('Error al cargar clientes:', err);
       setError('No se pudieron cargar los clientes');
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  // Crear un nuevo cliente
+  // MVP: El backend no tiene ruta POST para clientes aislados
   const createClient = async (clientData) => {
-    try {
-      const response = await api.post('/clients', clientData);
-      setClients((prev) => [...prev, response.data.data || response.data]);
-      return true;
-    } catch (err) {
-      console.error('Error creating client:', err);
-      setError('Error al crear el cliente');
-      return false;
-    }
+    alert("Aviso MVP: El backend actual no tiene ruta para crear clientes manualmente. Los clientes se asocian al crear citas.");
+    return false; 
   };
 
-  // Actualizar un cliente
   const updateClient = async (id, clientData) => {
     try {
-      const response = await api.put(`/clients/${id}`, clientData);
+      // Adaptamos los datos exactamente a lo que pide el updateClientSchema (Zod) del backend
+      const payload = {
+        name: clientData.name,
+        internalNotes: clientData.notes // El backend espera internalNotes
+      };
+
+      // Usamos PATCH en lugar de PUT, coincidiendo con router.patch()
+      const response = await api.patch(`/clients/${id}`, payload);
+      const updatedClient = response.data.data || response.data;
+      
       setClients((prev) =>
-        prev.map((client) => (client.id === id ? (response.data.data || response.data) : client))
+        prev.map((client) => {
+          if (client.id === id) {
+            // Mantenemos los datos de lectura (email, phone) y actualizamos los editados
+            return {
+              ...client,
+              name: updatedClient.name,
+              notes: updatedClient.internalNotes
+            };
+          }
+          return client;
+        })
       );
       return true;
     } catch (err) {
-      console.error('Error updating client:', err);
-      setError('Error al actualizar el cliente');
+      console.error('Error actualizando cliente:', err);
+      alert('Error al actualizar el cliente verifique los datos.');
       return false;
     }
   };
 
-  // Eliminar un cliente
+  // MVP: El backend no tiene ruta DELETE
   const deleteClient = async (id) => {
-    try {
-      await api.delete(`/clients/${id}`);
-      setClients((prev) => prev.filter((client) => client.id !== id));
-      return true;
-    } catch (err) {
-      console.error('Error deleting client:', err);
-      setError('Error al eliminar el cliente');
-      return false;
-    }
+    alert("Aviso MVP: El backend actual no permite eliminar clientes.");
+    return false;
   };
 
   return {
@@ -67,7 +69,7 @@ export const useClients = () => {
     isLoading,
     error,
     fetchClients,
-    createClient,
+    createClient, // Se exporta para no romper la UI, pero muestra alerta
     updateClient,
     deleteClient
   };
