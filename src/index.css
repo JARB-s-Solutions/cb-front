@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@import "tailwindcss";
-
 @theme {
   /* Colores principales usados en el HTML */
   --color-background: #10131a;
@@ -9,8 +7,13 @@
   --color-primary: #aec6ff;
   --color-on-primary: #002e6a;
   --color-primary-fixed: #d8e2ff;
+  --color-primary-container: #d8e2ff;
+  --color-on-primary-container: #002e6a;
   --color-surface-container-low: #191b23;
+  --color-surface-container: #20242d;
+  --color-surface-container-high: #2a2e38;
   --color-surface-container-highest: #32353c;
+  --color-surface-variant: #454b59;
   --color-on-surface: #e1e2ec;
   --color-on-surface-variant: #c2c6d6;
   --color-outline: #8c909f;

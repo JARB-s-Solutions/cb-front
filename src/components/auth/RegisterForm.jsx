@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../../config/axios'; 
-import { useAuth } from '../../context/AuthContext'; 
+import { useAuth } from '../../context/useAuth'; 
 
 export default function RegisterForm() {
   const navigate = useNavigate();
@@ -86,7 +86,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="w-full max-w-[420px] bg-surface-container rounded-xl border border-outline-variant shadow-2xl flex flex-col relative overflow-hidden">
+    <div className="w-full max-w-[420px] bg-surface-container-low rounded-xl border border-outline-variant shadow-[0_10px_30px_rgba(0,0,0,0.45)] flex flex-col relative overflow-hidden">
       <div className="px-6 md:px-10 py-8 flex flex-col gap-5">
         
         {/* Branding Header */}
@@ -112,8 +112,8 @@ export default function RegisterForm() {
         )}
 
         {successMessage && (
-          <div className="p-3 rounded-lg bg-green-900/40 border-l-4 border-green-500 text-green-200 flex items-start gap-2">
-            <span className="material-symbols-outlined text-green-500 text-[20px] mt-0.5">check_circle</span>
+          <div className="p-3 rounded-lg bg-primary/10 border-l-4 border-primary text-on-surface flex items-start gap-2">
+            <span className="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
             <div>
               <p className="font-bold text-[13px]">¡Éxito!</p>
               <p className="text-[13px] mt-0.5">{successMessage}</p>
@@ -194,6 +194,7 @@ export default function RegisterForm() {
             className={`w-full bg-primary-container text-on-primary-container font-semibold rounded-lg py-2.5 mt-2 flex items-center justify-center gap-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background shadow-lg shadow-primary-container/20 ${
               isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:brightness-110 active:scale-[0.98]'
             }`}
+          
           >
             {isLoading ? (
               <>
@@ -219,7 +220,7 @@ export default function RegisterForm() {
             onSuccess={handleGoogleSuccess}
             onError={() => setError("La conexión con Google falló.")}
             useOneTap={false}
-            theme="filled_black"
+            theme="filled_blue"
             shape="rectangular"
             text="continue_with"
             width="340"

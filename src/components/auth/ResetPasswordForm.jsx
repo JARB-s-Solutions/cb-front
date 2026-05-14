@@ -52,7 +52,7 @@ export default function ResetPasswordForm() {
   };
 
   return (
-    <div className="w-full max-w-[440px] bg-surface-container rounded-xl border border-outline-variant shadow-[0_10px_30px_rgba(0,0,0,0.5)] py-10 px-8 relative overflow-hidden flex flex-col gap-6">
+    <div className="w-full max-w-[440px] bg-surface-container-low rounded-xl border border-outline-variant shadow-[0_10px_30px_rgba(0,0,0,0.5)] py-10 px-8 relative overflow-hidden flex flex-col gap-6">
       
       {isLoading && (
         <div className="absolute top-0 left-0 w-full h-[2px] bg-surface-container-highest">
@@ -78,8 +78,8 @@ export default function ResetPasswordForm() {
       )}
 
       {successMessage && (
-        <div className="p-3 rounded-lg bg-green-900/40 border-l-4 border-green-500 text-green-200 flex items-start gap-2">
-          <span className="material-symbols-outlined text-green-500 text-[20px] mt-0.5">check_circle</span>
+        <div className="p-3 rounded-lg bg-primary/10 border-l-4 border-primary text-on-surface flex items-start gap-2">
+          <span className="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
           <p className="text-[13px] mt-0.5">{successMessage}</p>
         </div>
       )}

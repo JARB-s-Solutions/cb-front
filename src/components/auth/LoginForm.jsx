@@ -1,11 +1,11 @@
 import { api } from "../../config/axios";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
-  const { checkAuth } = useAuth();
+  const { setUserData } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,17 +23,23 @@ export default function LoginForm() {
       // Axios usa la configuración global, así que la cookie viaja sola
       const response = await api.post("/auth/login", { email, password });
 
-      setSuccessMessage(response.data.message);
-
-      // Le decimos a React que actualice el estado global porque ya tenemos cookie
-      await checkAuth();
-
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1000);
+       console.log('Login response:', response.data);
+       setSuccessMessage(response.data.message);
+       // Guardar el barberId de la respuesta para que el interceptor lo use
+       if (response.data.user) {
+         setUserData(response.data.user);
+         console.log('User establecido en AuthContext:', response.data.user);
+       }
+       // Navegar al dashboard
+       navigate("/dashboard", { replace: true });
     } catch (err) {
       // Axios guarda la respuesta de error del backend en err.response.data
-      setError(err.response?.data?.error || "Error al iniciar sesión");
+      console.error('Login error:', err.response?.data);
+      setError(
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        (err.request ? "No se pudo conectar con el servidor. Revisa la red o CORS." : "Error al iniciar sesión")
+      );
     } finally {
       setIsLoading(false);
     }
@@ -51,12 +57,12 @@ export default function LoginForm() {
 
       if (response.data.status === "success") {
         setSuccessMessage("¡Bienvenido con Google!");
+       if (response.data.user) {
+         setUserData(response.data.user);
+         console.log('User establecido (Google):', response.data.user);
+       }
 
-        await checkAuth(); // Actualizamos estado global
-
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 1000);
+      navigate("/dashboard", { replace: true });
       }
     } catch (err) {
       setError(
@@ -102,8 +108,8 @@ export default function LoginForm() {
         )}
 
         {successMessage && (
-          <div className="mb-6 p-4 rounded-lg bg-green-900/40 border-l-4 border-green-500 text-green-200 flex items-start gap-3">
-            <span className="material-symbols-outlined text-green-500 mt-0.5">
+          <div className="mb-6 p-4 rounded-lg bg-primary/10 border-l-4 border-primary text-on-surface flex items-start gap-3">
+            <span className="material-symbols-outlined text-primary mt-0.5">
               check_circle
             </span>
             <div>
@@ -208,7 +214,7 @@ export default function LoginForm() {
             onSuccess={handleGoogleSuccess}
             onError={() => setError("La conexión con Google falló.")}
             useOneTap={false}
-            theme="filled_black"
+            theme="filled_blue"
             shape="rectangular"
             text="continue_with"
             width="360"

@@ -1,35 +1,77 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext'; // <-- IMPORTAR
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import ProtectedRoute from './components/auth/ProtectedRoute';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
+import ProtectedRoute from './components/auth/ProtectedRoute'
+import { MainLayout } from './components/layout/MainLayout'
+import { DashboardPage } from './pages/DashboardPage'
+import { AppointmentsPage } from './pages/AppointmentsPage'
+import { ServicesPage } from './pages/ServicesPage'
+import { SchedulePage } from './pages/SchedulePage'
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
 
-          <Route 
-            path="/dashboard" 
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
             element={
               <ProtectedRoute>
-                <div className="text-white p-10 text-center">¡Bienvenido al Panel Protegido!</div>
+                <MainLayout>
+                  <DashboardPage />
+                </MainLayout>
               </ProtectedRoute>
-            } 
+            }
           />
-          
-          <Route path="*" element={<Navigate to="/" replace />} />
+
+          <Route
+            path="/citas"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <AppointmentsPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/servicios"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <ServicesPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/horarios"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <SchedulePage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
-  );
+  )
 }
 
-export default App;
+export default App
