@@ -174,15 +174,15 @@ export function BarberProfilePage() {
             Compartir
           </button>
         </div>
-
-        {/* Booking Modal */}
-        <BookingModal 
-          isOpen={isBookingOpen}
-          onClose={() => setIsBookingOpen(false)}
-          barber={profile}
-          services={services}
-        />
       </div>
+
+      {/* Booking Modal - Fuera del contenedor */}
+      <BookingModal 
+        isOpen={isBookingOpen}
+        onClose={() => setIsBookingOpen(false)}
+        barber={profile}
+        services={services}
+      />
     </div>
   )
 }
