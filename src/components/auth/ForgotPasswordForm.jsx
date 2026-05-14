@@ -58,8 +58,8 @@ export default function ForgotPasswordForm() {
         )}
 
         {successMessage && (
-          <div className="p-3 rounded-lg bg-green-900/40 border-l-4 border-green-500 text-green-200 flex items-start gap-2">
-            <span className="material-symbols-outlined text-green-500 text-[20px] mt-0.5">mark_email_read</span>
+          <div className="p-3 rounded-lg bg-primary/10 border-l-4 border-primary text-on-surface flex items-start gap-2">
+            <span className="material-symbols-outlined text-primary text-[20px] mt-0.5">mark_email_read</span>
             <p className="text-[13px] mt-0.5">{successMessage}</p>
           </div>
         )}

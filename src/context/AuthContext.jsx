@@ -1,43 +1,74 @@
-import { createContext, useState, useEffect, useContext } from 'react';
-import { api } from '../config/axios';
-
-const AuthContext = createContext();
+import { useState, useEffect, useCallback } from 'react'
+import { api } from '../config/axios'
+import { AuthContext } from './authContextValue'
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    const cachedUser = localStorage.getItem('authUser')
 
-  // Regla 2: ¿Cómo saber si está logueado al refrescar?
-  const checkAuth = async () => {
-    try {
-      const response = await api.get('/auth/profile');
-      setUser(response.data); // Si responde 200, guardamos los datos del barbero
-    } catch (error) {
-      setUser(null); // Si responde 401, lo dejamos en null
-    } finally {
-      setIsLoading(false); // Terminamos de cargar
+    if (!cachedUser) {
+      return null
     }
-  };
+
+    try {
+      return JSON.parse(cachedUser)
+    } catch {
+      localStorage.removeItem('authUser')
+      return null
+    }
+  })
+  const [isLoading, setIsLoading] = useState(true)
+
+  const setUserData = (userData) => {
+    setUser(userData)
+    if (userData?.id) {
+      localStorage.setItem('barberId', userData.id)
+      localStorage.setItem('authUser', JSON.stringify(userData))
+      console.log('[AuthContext] User data establecido:', userData.id)
+    }
+  }
+
+  // Obtener perfil y guardar barberId
+  const checkAuth = useCallback(async () => {
+    try {
+      const response = await api.get('/auth/profile')
+      setUserData(response.data)
+      console.log('checkAuth - user response:', response.data)
+    } catch (error) {
+      if (error?.response?.status !== 401) {
+        console.error('checkAuth error:', error.message)
+      }
+      setUser(null)
+      localStorage.removeItem('barberId')
+      localStorage.removeItem('authUser')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
-    checkAuth();
-  }, []);
+    const initializeAuth = async () => {
+      await checkAuth()
+    }
 
-  // Regla 3: El botón de Cerrar Sesión
+    void initializeAuth()
+  }, [checkAuth])
+
+  // Cerrar sesión
   const logout = async () => {
     try {
-      await api.post('/auth/logout'); // Le decimos al backend que destruya la cookie
-      setUser(null); // Limpiamos el estado en React
+      await api.post('/auth/logout')
+      setUser(null)
+      localStorage.removeItem('barberId')
+      localStorage.removeItem('authUser')
     } catch (error) {
-      console.error("Error al cerrar sesión", error);
+      console.error('Error al cerrar sesión', error)
     }
-  };
+  }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, checkAuth, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, checkAuth, logout, setUserData }}>
       {children}
     </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => useContext(AuthContext);
+  )
+}

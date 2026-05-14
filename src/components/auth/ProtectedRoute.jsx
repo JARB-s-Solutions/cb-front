@@ -1,8 +1,9 @@
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 
 export default function ProtectedRoute({ children }) {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading } = useAuth(); 
+  const cachedUser = localStorage.getItem('authUser')
 
   // Mientras verifica la cookie con el backend, mostramos un loader
   if (isLoading) {
@@ -14,7 +15,7 @@ export default function ProtectedRoute({ children }) {
   }
 
   // Si terminó de cargar y no hay usuario, lo botamos al login
-  if (!user) {
+  if (!user && !cachedUser) {
     return <Navigate to="/" replace />;
   }
 
