@@ -10,6 +10,7 @@ import { DashboardPage } from './pages/DashboardPage'
 import { AppointmentsPage } from './pages/AppointmentsPage'
 import { ServicesPage } from './pages/ServicesPage'
 import { SchedulePage } from './pages/SchedulePage'
+import { ClientsPage } from './pages/ClientsPage';
 
 function App() {
   return (
@@ -62,6 +63,17 @@ function App() {
               <ProtectedRoute>
                 <MainLayout>
                   <SchedulePage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/clientes"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <ClientsPage />
                 </MainLayout>
               </ProtectedRoute>
             }
