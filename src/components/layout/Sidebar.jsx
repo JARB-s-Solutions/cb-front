@@ -8,6 +8,7 @@ const menuItems = [
   { id: 'services', label: 'Servicios', href: '/servicios', icon: '✂️' },
   { id: 'schedule', label: 'Horarios', href: '/horarios', icon: '⏰' },
   { id: 'clients', label: 'Clientes', href: '/clientes', icon: '👨' },
+  { id: 'finanzas', label: 'Caja', href: '/finanzas', icon: '🍱' },
 ]
 
 export function Sidebar({ isOpen, onClose }) {
