@@ -13,6 +13,9 @@ import { SchedulePage } from './pages/SchedulePage'
 import { ClientsPage } from './pages/ClientsPage';
 import { FinancePage } from './pages/FinancePage';
 import { GalleryPage } from './pages/GalleryPage';
+import BarberProfilePage from './pages/BarberProfilePage';
+import MarketplacePage from './pages/MarketplacePage';
+import ReportsPage from './pages/ReportsPage';
 
 function App() {
   return (
@@ -24,6 +27,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/barberos/:id" element={<BarberProfilePage />} />
 
           {/* Protected Routes */}
           <Route
@@ -102,6 +106,19 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/reportes"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <ReportsPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="/barberos" element={<MarketplacePage />} />
 
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
