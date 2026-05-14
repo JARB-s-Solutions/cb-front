@@ -9,6 +9,7 @@ const menuItems = [
   { id: 'schedule', label: 'Horarios', href: '/horarios', icon: '⏰' },
   { id: 'clients', label: 'Clientes', href: '/clientes', icon: '👨' },
   { id: 'finanzas', label: 'Caja', href: '/finanzas', icon: '🍱' },
+  { id: 'galeria', label: 'Galería', href: '/galeria', icon: '🖼️' }
 ]
 
 export function Sidebar({ isOpen, onClose }) {

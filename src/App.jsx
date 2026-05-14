@@ -12,6 +12,7 @@ import { ServicesPage } from './pages/ServicesPage'
 import { SchedulePage } from './pages/SchedulePage'
 import { ClientsPage } from './pages/ClientsPage';
 import { FinancePage } from './pages/FinancePage';
+import { GalleryPage } from './pages/GalleryPage';
 
 function App() {
   return (
@@ -86,6 +87,17 @@ function App() {
               <ProtectedRoute>
                 <MainLayout>
                   <FinancePage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/galeria"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <GalleryPage />
                 </MainLayout>
               </ProtectedRoute>
             }
