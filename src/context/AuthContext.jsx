@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
       return null
     }
   })
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   const setUserData = (userData) => {
     setUser(userData)
@@ -34,35 +34,40 @@ export const AuthProvider = ({ children }) => {
       const response = await api.get('/auth/profile')
       setUserData(response.data)
       console.log('checkAuth - user response:', response.data)
+      return response.data
     } catch (error) {
-      if (error?.response?.status !== 401) {
+      if (error?.response?.status === 401) {
+        // Token expirado o inválido
+        setUser(null)
+        localStorage.removeItem('barberId')
+        localStorage.removeItem('authUser')
+      } else {
         console.error('checkAuth error:', error.message)
       }
-      setUser(null)
-      localStorage.removeItem('barberId')
-      localStorage.removeItem('authUser')
-    } finally {
-      setIsLoading(false)
+      return null
     }
   }, [])
 
+  // Solo sincronizar con el backend si es necesario (ej: después de logout remoto)
+  // La persistencia se mantiene con localStorage
   useEffect(() => {
-    const initializeAuth = async () => {
-      await checkAuth()
+    // Si no hay usuario en localStorage, no hacemos nada
+    // El usuario estará en null y ProtectedRoute redirigirá al login
+    if (!user) {
+      setIsLoading(false)
     }
-
-    void initializeAuth()
-  }, [checkAuth])
+  }, [user])
 
   // Cerrar sesión
   const logout = async () => {
     try {
       await api.post('/auth/logout')
+    } catch (error) {
+      console.error('Error al cerrar sesión', error)
+    } finally {
       setUser(null)
       localStorage.removeItem('barberId')
       localStorage.removeItem('authUser')
-    } catch (error) {
-      console.error('Error al cerrar sesión', error)
     }
   }
 
