@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../../context/useAuth'
+import { NotificationsWidget } from './NotificationsWidget'; // 
 
 export function Navbar() {
   const [showMenu, setShowMenu] = useState(false)
@@ -46,11 +47,12 @@ export function Navbar() {
             <span>Plan {planLabel}</span>
           </div>
 
-          {/* Notificaciones */}
-          <button className="relative rounded-xl border border-outline-variant/50 bg-surface-container-highest p-2.5 text-on-surface-variant transition-colors hover:text-primary">
-            <span className="text-xl">🔔</span>
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"></span>
-          </button>
+          <div className="flex items-center gap-4">
+            <NotificationsWidget />
+
+            {/* Aquí va tu foto de perfil o lo que ya tenías */}
+            <div className="w-8 h-8 rounded-full bg-gray-700"></div>
+          </div>
 
           {/* Menu User */}
           <div className="relative">
@@ -58,9 +60,6 @@ export function Navbar() {
               onClick={() => setShowMenu(!showMenu)}
               className="flex items-center gap-2 rounded-xl border border-outline-variant/50 bg-surface-container-highest px-2.5 py-2 transition-colors hover:border-primary/60"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-on-primary text-sm font-bold">
-                {userInitial}
-              </div>
               <div className="hidden text-left sm:block">
                 <p className="text-xs font-medium text-on-surface">{user?.fullName || 'Mi cuenta'}</p>
                 <p className="text-[11px] text-on-surface-variant">{user?.email || 'Sesión activa'}</p>
