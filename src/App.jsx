@@ -11,6 +11,7 @@ import { AppointmentsPage } from './pages/AppointmentsPage'
 import { ServicesPage } from './pages/ServicesPage'
 import { SchedulePage } from './pages/SchedulePage'
 import { ClientsPage } from './pages/ClientsPage';
+import { FinancePage } from './pages/FinancePage';
 
 function App() {
   return (
@@ -74,6 +75,17 @@ function App() {
               <ProtectedRoute>
                 <MainLayout>
                   <ClientsPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/finanzas"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <FinancePage />
                 </MainLayout>
               </ProtectedRoute>
             }
