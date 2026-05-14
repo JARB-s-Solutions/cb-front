@@ -9,11 +9,14 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
+    // Proxy API calls to production backend (Vercel)
     proxy: {
       '/api': {
         target: 'https://controlbarber-backend.vercel.app',
         changeOrigin: true,
         secure: true,
+        // Don't rewrite the path - keep /api in the request
+        rewrite: (path) => path,
       },
     },
   },
