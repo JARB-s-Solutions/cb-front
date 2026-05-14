@@ -76,12 +76,12 @@ export function BookingModal({ isOpen, onClose, barber, services }) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[#0f0f0f] rounded-xl border border-gray-800 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4 overflow-y-auto">
+      <div className="bg-[#0f0f0f] rounded-xl border border-gray-800 max-w-md w-full max-h-[85vh] overflow-y-auto my-auto">
         {/* Header */}
-        <div className="p-6 border-b border-gray-800 flex justify-between items-center sticky top-0 bg-[#0f0f0f]">
-          <h2 className="text-xl font-bold text-white">Agendar cita con {barber?.name}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">×</button>
+        <div className="p-6 border-b border-gray-800 flex justify-between items-start gap-4 sticky top-0 bg-[#0f0f0f] z-10">
+          <h2 className="text-lg font-bold text-white flex-1">Agendar con {barber?.name}</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl flex-shrink-0">×</button>
         </div>
 
         <div className="p-6">
